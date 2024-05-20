@@ -1,2 +1,0 @@
-# SFML-base
-SFML base
