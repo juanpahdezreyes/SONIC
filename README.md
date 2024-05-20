@@ -11,4 +11,4 @@ Este proyecto está inspirado en el popular videojuego Sonic the Hedgehog. Nuest
 - Juan Pablo López de León (NL 10, 4D)
 
 ## Link del Repositorio
-[Repositorio del Proyecto](https://github.com/tu_usuario/sonic-game-project)
+[Repositorio del Proyecto](https://github.com/mcarrillo-cedi/SFML-test.git)
