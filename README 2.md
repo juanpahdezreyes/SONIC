@@ -13,10 +13,4 @@ Este proyecto está inspirado en el popular videojuego Sonic the Hedgehog. Nuest
 ## Link del Repositorio
 [Repositorio del Proyecto](https://github.com/mcarrillo-cedi/SFML-test.git)
 
-Hola profe,
-
-Quería comentarte un problemita que tuvimos con la cuenta de Juanpi López. Su compu ha estado fallando y no pudo subir sus cambios, así que por ahora todo está registrado solo con mi usuario.
-
-¿Podríamos ver esto el lunes para arreglarlo? Mientras tanto, si hay algún problema con la entrega por estar a mi nombre, por favor avísame.
-
-Gracias profe, saludos.
+ya quedo.
