@@ -69,8 +69,7 @@ int main()
     monedas.push_back(blah);
     monedas.push_back(blah);
 
-    while (window.isOpen())
-    {
+    while (window.isOpen()) {
         Event event;
         while (window.pollEvent(event))
         {
