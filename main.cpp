@@ -5,6 +5,7 @@
 using namespace sf;
 using namespace std;
 
+
 float gravity = 0;
 int jump=0;
 bool canJump = 0;
@@ -39,6 +40,14 @@ int main()
     Sonic.setFillColor(Color::Blue);
     Sonic.setOrigin(16,16);
     Sonic.setPosition(700,0);
+    Texture SonicParado;
+    if(!SonicParado.loadFromFile("sonic1-removebg-preview.png"))
+    {
+        cout << "Error al cargar imagen" << endl;
+    }
+    Sprite Sonic1;
+    Sonic1.setTexture(SonicParado);
+    Sonic1.setTextureRect(IntRect(0,0,29,39));
     // Creación del Jugador 32x64 la Textura
     vector <RectangleShape> nivel; // Vector de bloques que conforman el nivel
     RectangleShape col(Vector2f(512,128)); // Ejemplo base que se va a hace .push_back en el vector de nivel
@@ -231,6 +240,8 @@ int main()
         // Morado = Completamente detenido
         // Verde = Moviendose en una plataforma
         // Rojo = Cayendo
+        Sonic1.setPosition(Sonic.getPosition());
+        window.draw(Sonic1);
         window.display();
     }
 
