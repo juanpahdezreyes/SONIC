@@ -16,6 +16,7 @@ bool Rr=0;
 bool stopG = 0;
 bool ball = 0;
 bool cambiado = 1;
+bool vivo = 1;
 float movex = 0;
 float movey = 0;
 float desliz = 0;
@@ -25,6 +26,8 @@ int camaraMove = 1;
 int EnNivel = 0;
 float moveForce = 1;
 int JumpLimit = 25;
+int ToRecolect = 10;
+int recolected = 0;
 
 int rotateFrame = 1;
 int rotateVel=20;   // Variable para la velocidad de giro de la bola
@@ -57,8 +60,14 @@ int main()
 {
 
     sf::Texture bloques;
-    bloques.loadFromFile("assets/Sbloque.png");
+    bloques.loadFromFile("assets/SbloqueGrass.png");
     sf::Sprite Block(bloques);
+
+    sf::Texture dinero;
+    dinero.loadFromFile("assets/Scoin.png");
+
+    sf::Texture mata;
+    mata.loadFromFile("assets/Slava.png");
 
     sf::Texture back;
     back.loadFromFile("assets/Sfondo.png");
@@ -87,53 +96,98 @@ int main()
     Sonic.setFillColor(Color::Blue);
     Sonic.setOrigin(32,64);
     Sonic.setPosition(700,0);
-    // Creación del Jugador 32x64 la Textura
+    // Creación del Jugador 64x128 la Textura
     vector <RectangleShape> nivel; // Vector de bloques que conforman el nivel
     RectangleShape col(Vector2f(512,128)); // Ejemplo base que se va a hace .push_back en el vector de nivel
-    col.setFillColor(Color::Green);
     col.setPosition(256,896);
+    bloques.setRepeated(true);
+    col.setTexture(&bloques);
+
+    for (int i=0;i<8;i++){
     nivel.push_back(col);
-    nivel.push_back(col);
-    nivel.push_back(col);
-    nivel.push_back(col);
+    }   // Número de bloques
+
     nivel[0].setSize(Vector2f(3200,128));
     nivel[0].setPosition(800,960-64);
     nivel[0].setFillColor(Color::Transparent);
     nivel[1].setPosition(640,384);
-    nivel[1].setFillColor(Color::Magenta);
     nivel[2].setPosition(500,640);
-    nivel[3].setPosition(-128,384);
-    nivel[3].setFillColor(Color::Magenta);// Se establece cada bloque del nivel en su posición
-    nivel[3].setSize(Vector2f(128,896));
+    nivel[3].setSize(Vector2f(128,896+128));
+    nivel[3].setPosition(-128,384-64);
+    nivel[4].setSize(Vector2f(128,896+128));
+    nivel[4].setPosition(2560+256-64,384-64);
+    nivel[5].setPosition(1664,256);
+    nivel[5].setSize(Vector2f(256,128));
+    nivel[6].setPosition(2624,512);
+    nivel[6].setSize(Vector2f(128,128));
+    nivel[7].setPosition(1920,768); // Se establece cada bloque del nivel en su posición
 
     for (int i=0;i<nivel.size();i++){
         nivel[i].setOrigin(nivel[i].getSize().x/2,nivel[i].getSize().y/2);
-    }
+    }   // Para las coordenadas
+
+    vector <RectangleShape> lava;   // Vector de lavas del nivel
+    RectangleShape burn(Vector2f(128,128)); // Ejemplo base que se va a hace .push_back en el vector de lava
+    burn.setTexture(&mata);
+
+    for(int i=0;i<=8;i++){
+        lava.push_back(burn);
+    }   // Número de lavas
+
+    lava[0].setPosition(384+16,384);
+    lava[0].setSize(Vector2f(96,96));
+    lava[1].setPosition(1600,800);
+    lava[2].setPosition(1472,800);
+    lava[3].setSize(Vector2f(96,96));
+    lava[3].setPosition(1344,800);
+    lava[4].setPosition(2240,800);
+    lava[5].setPosition(2368,800);
+    lava[6].setPosition(256,640);
+    lava[6].setSize(Vector2f(96,96));
+    lava[7].setPosition(768-16,640);
+    lava[7].setSize(Vector2f(96,96));
+    lava[8].setPosition(896-16,384);
+    lava[8].setSize(Vector2f(96,96));   // Se establece cada lava del nivel en su posición
+
+    for (int i=0;i<lava.size();i++){
+        lava[i].setOrigin(lava[i].getSize().x/2,lava[i].getSize().y/2);
+    }   // Para las coordenadas
     
     Grid ejemplo;
     ejemplo.sprite.setTexture(bloques);
     ejemplo.sprite.setOrigin(64,64);
-    vector <Grid> mapa;
+    vector <Grid> mapa; // No sirvio
 
     sf::View camara = window.getDefaultView();//Crea la variable camara
     RectangleShape CdontMove(Vector2f(512,512));//Crea el cuadrado en el que la camara se va a detener (para un efecto mejor)
     CdontMove.setOrigin(160,160);
     CdontMove.setPosition(Sonic.getPosition());
     CdontMove.setFillColor(Color::Transparent);
+    Pose.setColor(Color::Black);
 
     vector <Coin> monedas;  // Vector de las monedas del nivel
-    CircleShape coin(16);
+    CircleShape coin(32);
     coin.setOrigin(8,8);
-    coin.setFillColor(Color::Yellow);   // Moneda base
+    coin.setTexture(&dinero);  // Moneda base
     Coin blah(coin);    // Clase Coin base
-    monedas.push_back(blah);
-    monedas.push_back(blah);
-    monedas.push_back(blah);
-    monedas.push_back(blah);
+    
+    for (int i=0;i<ToRecolect;i++){
+        monedas.push_back(blah);
+    }
 
     for (int i=0;i<monedas.size();i++){
         if (monedas[i].picked==0){
-            monedas[i].mon.setPosition(0+(rand()%1600),0+rand()%576 + 256);
+            monedas[i].mon.setPosition(0+(rand()%2632),0+(rand()%500) + 128);
+            for (int j=0;j<nivel.size();j++){
+                if(monedas[i].mon.getGlobalBounds().intersects(nivel[j].getGlobalBounds())){
+                    monedas[i].mon.setPosition(monedas[i].mon.getPosition().x,monedas[i].mon.getPosition().y-128);
+                }
+            }   // Si colisionan con un bloque se mueven
+            for (int j=0;j<lava.size();j++){
+                if(monedas[i].mon.getGlobalBounds().intersects(lava[j].getGlobalBounds())){
+                    monedas[i].mon.setPosition(monedas[i].mon.getPosition().x,monedas[i].mon.getPosition().y-128);
+                }
+            }   // Si colisionan con una lava se mueven
         }
     }//Randomiza las monedas al inicio
 
@@ -195,8 +249,15 @@ int main()
             if (Sonic.getGlobalBounds().intersects(monedas[i].mon.getGlobalBounds())){
                 monedas[i].picked=1;
                 monedas[i].UpdateCoin();
+                recolected++;
             }
         }   // Checa si hay colisiones con el Jugador. Si es el caso pone la moneda como picked y actualiza la moneda
+
+        for (int i=0;i<lava.size();i++){
+            if (Sonic.getGlobalBounds().intersects(lava[i].getGlobalBounds())){
+                vivo=0;
+            }
+        }   // Checa si hay colisiones con el Jugador y la lava. Si es asi lo mata
 
         if (Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::Space)){
             Sonic.setPosition(Sonic.getPosition().x,Sonic.getPosition().y-1);
@@ -225,34 +286,33 @@ int main()
         }else{
             Aa=0;
         }   // Si la ´A´ no es presionada vuelve su variable de presionada falsa
-        if (Keyboard::isKeyPressed(Keyboard::R) && Rr==0){
+        if (Keyboard::isKeyPressed(Keyboard::R) && Rr==0 || vivo==0){
             Sonic.setPosition(700,0);
-            CdontMove.setPosition(700,0);
+            recolected=0;
+            Pose.setColor(Color::White);
+            vivo=1;
+            CdontMove.setPosition(Sonic.getPosition());
             camara = window.getDefaultView();
             //camara.setCenter(Sonic.getPosition().x,Sonic.getPosition().y);
             Rr=1;
             for (int i=0;i<monedas.size();i++){
-                if (monedas[i].picked==0){
+                    monedas[i].mon.setFillColor(Color::White);
+                    monedas[i].picked=0;
                     monedas[i].mon.setPosition(0+(rand()%1600),0+(rand()%576)+256);
-                }
+                    for (int j=0;j<nivel.size();j++){
+                        if(monedas[i].mon.getGlobalBounds().intersects(nivel[j].getGlobalBounds())){
+                            monedas[i].mon.setPosition(monedas[i].mon.getPosition().x,monedas[i].mon.getPosition().y-128);
+                        }   // Si colisionan con un bloque se mueven
+                    }
+                    for (int j=0;j<lava.size();j++){
+                        if(monedas[i].mon.getGlobalBounds().intersects(lava[j].getGlobalBounds())){
+                            monedas[i].mon.setPosition(monedas[i].mon.getPosition().x,monedas[i].mon.getPosition().y-128);
+                        }   // Si colisionan con una lava se mueven
+                    }
             }
         }else{  // Reinicia la posición del Sonic (Por si se cae al vacio) (Ya no es necesario pues el suelo lo sigue)
             Rr=0;
         }    
-        if (Keyboard::isKeyPressed(Keyboard::S) || Keyboard::isKeyPressed(Keyboard::Down)){
-                ball = 1;
-                Sonic.setSize(Vector2f(64.f,64.f));
-                Sonic.setOrigin(32,32);
-                texturas.loadFromFile("assets/Sbola2.png");
-                moveForce=1.8;
-                Ss = 1;
-                JumpLimit=15;
-                // Indica que se transforme en bola
-        }else{
-            JumpLimit=25;
-            moveForce=1;
-            Ss=0;
-        }
         if (Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::Right)){
             if (canJump==1) walkcounter++;  // indica que inicie la animación de caminar
             lastmove = -1;
@@ -263,6 +323,31 @@ int main()
         }else{
             Dd=0;
         }   // Si la ´D´ no es presionada vuelve su variable de presionada falsa
+
+        if (Keyboard::isKeyPressed(Keyboard::S) || Keyboard::isKeyPressed(Keyboard::Down)){
+                if (movex!=0 && gravity==0){
+                ball = 1;
+                }
+                // if (movex==0 && movey!=0 || gravity!=0){
+                //     ball=1;
+                // }
+                if (jump>0 || gravity>0) ball=1;
+                if (ball==1){
+                    Sonic.setSize(Vector2f(64.f,64.f));
+                    Sonic.setOrigin(32,32);
+                    texturas.loadFromFile("assets/Sbola2.png");
+                    Pose.setColor(Color::Black);
+                    moveForce=1.8;
+                    Ss = 1;
+                    JumpLimit=15;
+                    // Indica que se transforme en bola
+                }
+        }else{
+            JumpLimit=25;
+            moveForce=1;
+            Ss=0;
+        }
+
         if (jump>0){
         Sonic.move(0,-10);
         SonicJump();
@@ -270,6 +355,7 @@ int main()
         if (lastmove==1)Pose.setScale(1,1);
         if(lastmove==-1)Pose.setScale(-1,1);
         if(ball==0)texturas.loadFromFile("assets/SjumpUp.png");
+        Pose.setColor(Color::Black);
         }   // Continuación de la secuencia de salto
         
         if (Dd==0 && Aa==0){
@@ -293,6 +379,7 @@ int main()
         if (movey==0 && movex==0 && canJump==1){
             Sonic.setFillColor(Color::Transparent);
             texturas.loadFromFile("standing.png");
+            Pose.setColor(Color::White);
             ball=0;
             Pose.setScale(lastmove,1);
         }else{
@@ -328,6 +415,7 @@ int main()
         dont=0;
 
         if (walkcounter>0 && canJump==1 && ball==0){ //animación de caminado
+            Pose.setColor(Color::Black);
             if (walkcounter>walkframe*walkwait){
                 walkframe++;
             }   // Calculos para ver cuando cambiar de sprite/textura
@@ -359,6 +447,7 @@ int main()
         if (lastmove==1)Pose.setScale(1,1);
         if(lastmove==-1)Pose.setScale(-1,1);
         if (ball==0 && movex!=0)texturas.loadFromFile("assets/SfallDown2.png");
+        Pose.setColor(Color::Black);
         }   //Gravedad del Jugador
         stopG=0;
         Sonic.move(movex,movey);// Mueve al jugador finalmente cuanto se le indique
@@ -374,11 +463,16 @@ int main()
             rotateFrame=0;
         }   // Rotación de la bola
 
+        if (recolected==ToRecolect)Pose.setColor(Color::White); // Si recolecto todas las monedas el jugador se pone verde has ganado
+
         window.draw(fondo);
         window.draw(fondo2);
         window.draw(fondo3);
         window.draw(CdontMove);
 
+        for (int i=0;i<lava.size();i++){
+        window.draw(lava[i]);
+        }   // Dibuja el vector de lava
         for (int i=0;i<nivel.size();i++){
         window.draw(nivel[i]);
         }   // Dibuja el vector de cuadros

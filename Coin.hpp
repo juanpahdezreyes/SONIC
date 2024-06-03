@@ -9,8 +9,8 @@ bool picked;
 
 void UpdateCoin(){
     if (this->picked==1){
-        this->mon.setPosition(0,this->mon.getPosition().y);
-        this->mon.setFillColor(Color::Cyan);
+        this->mon.setPosition(-256,0);
+        this->mon.setFillColor(Color::Transparent);
     }
 }   // Checa si ya ha sido tomada si es asi la coloca al borde (donde no se podra agarrar más) si no 
 
