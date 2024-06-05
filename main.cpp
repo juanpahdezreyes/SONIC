@@ -29,11 +29,11 @@ int JumpLimit = 25;
 int ToRecolect = 10;
 int recolected = 0;
 
-int rotateFrame = 1;
-int rotateVel=20;   // Variable para la velocidad de giro de la bola
+int rotateFrame = 1; // contador de frames que da , cuando llegue a 360 se reinicia osea la vuelta completa
+int rotateVel=20;   // Variable para la velocidad de giro de la bola que esta en 20 popr que si le pusieramos 360 no se notaria la vuelta
 
 int walkframe=1;    // Frame en el que va la animación caminar
-int walkcounter=0;  // Contador para ir cambiando entre sprites
+int walkcounter=0;   // Contador que mide los fotogramas transcurridos para cambiar el sprite de caminar de Sonic
 int walkwait=10;    // Cuantos frames pasan entre cada diferente sprite/textura de animación de caminar
 // Variables necesarias para la aniamción de caminar
 
@@ -58,7 +58,7 @@ int grid[40][7];
 
 int main()
 {
-
+    // ### Carga de Texturas
     sf::Texture bloques;
     bloques.loadFromFile("assets/SbloqueGrass.png");
     sf::Sprite Block(bloques);
@@ -90,13 +90,15 @@ int main()
     sf::Sprite Pose(texturas);
     Pose.setOrigin(32,64);//sprite de Sonic
 
+    // ### Creación del Jugador
     RenderWindow window(VideoMode(1664, 1024), "¡Sonic!");
     window.setFramerateLimit(60);
     RectangleShape Sonic(Vector2f(64.f,128.f));
     Sonic.setFillColor(Color::Blue);
     Sonic.setOrigin(32,64);
     Sonic.setPosition(700,0);
-    // Creación del Jugador 64x128 la Textura
+
+    // ### Configuración del Nivel
     vector <RectangleShape> nivel; // Vector de bloques que conforman el nivel
     RectangleShape col(Vector2f(512,128)); // Ejemplo base que se va a hace .push_back en el vector de nivel
     col.setPosition(256,896);
@@ -107,6 +109,7 @@ int main()
     nivel.push_back(col);
     }   // Número de bloques
 
+    // ### Ajuste de Posición y Tamaño de los Bloques
     nivel[0].setSize(Vector2f(3200,128));
     nivel[0].setPosition(800,960-64);
     nivel[0].setFillColor(Color::Transparent);
@@ -126,6 +129,7 @@ int main()
         nivel[i].setOrigin(nivel[i].getSize().x/2,nivel[i].getSize().y/2);
     }   // Para las coordenadas
 
+    // ### Configuración de la Lava
     vector <RectangleShape> lava;   // Vector de lavas del nivel
     RectangleShape burn(Vector2f(128,128)); // Ejemplo base que se va a hace .push_back en el vector de lava
     burn.setTexture(&mata);
@@ -152,7 +156,8 @@ int main()
     for (int i=0;i<lava.size();i++){
         lava[i].setOrigin(lava[i].getSize().x/2,lava[i].getSize().y/2);
     }   // Para las coordenadas
-    
+
+    // ### Configuración de la Cámara y el Jugador
     Grid ejemplo;
     ejemplo.sprite.setTexture(bloques);
     ejemplo.sprite.setOrigin(64,64);
@@ -165,6 +170,7 @@ int main()
     CdontMove.setFillColor(Color::Transparent);
     Pose.setColor(Color::Black);
 
+    // ### Configuración de Monedas
     vector <Coin> monedas;  // Vector de las monedas del nivel
     CircleShape coin(32);
     coin.setOrigin(8,8);
@@ -175,6 +181,7 @@ int main()
         monedas.push_back(blah);
     }
 
+    // ### Posicionamiento Aleatorio de Monedas
     for (int i=0;i<monedas.size();i++){
         if (monedas[i].picked==0){
             monedas[i].mon.setPosition(0+(rand()%2632),0+(rand()%500) + 128);
@@ -191,6 +198,7 @@ int main()
         }
     }//Randomiza las monedas al inicio
 
+    // ### Bucle Principal del Juego
     while (window.isOpen())
     {
         Event event;
@@ -199,8 +207,12 @@ int main()
             if (event.type == Event::Closed)
                 window.close();
         }
+
+        // ### Colisiones con Bloques del Nivel
         for (int i=0;i<nivel.size();i++){ // Recorre el vector de nivel
-            if (Sonic.getGlobalBounds().intersects(nivel[i].getGlobalBounds())){ // Checa si hay alguna colisión entre cualquiera de los bloques existentes en el vector de nivel
+            if (Sonic.getGlobalBounds().
+
+intersects(nivel[i].getGlobalBounds())){ // Checa si hay alguna colisión entre cualquiera de los bloques existentes en el vector de nivel
                 
                 //      REFERENCIA EMPIEZA AQUÍ
                 deltaX = Sonic.getPosition().x - nivel[i].getPosition().x;
@@ -245,6 +257,8 @@ int main()
                 
             }
         }
+
+        // ### Recolección de Monedas
         for (int i=0;i<monedas.size();i++){
             if (Sonic.getGlobalBounds().intersects(monedas[i].mon.getGlobalBounds())){
                 monedas[i].picked=1;
@@ -253,12 +267,14 @@ int main()
             }
         }   // Checa si hay colisiones con el Jugador. Si es el caso pone la moneda como picked y actualiza la moneda
 
+        // ### Colisiones con Lava
         for (int i=0;i<lava.size();i++){
             if (Sonic.getGlobalBounds().intersects(lava[i].getGlobalBounds())){
                 vivo=0;
             }
         }   // Checa si hay colisiones con el Jugador y la lava. Si es asi lo mata
 
+        // ### Salto de Sonic
         if (Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::Space)){
             Sonic.setPosition(Sonic.getPosition().x,Sonic.getPosition().y-1);
             for(int i=0;i<nivel.size();i++){
@@ -277,6 +293,8 @@ int main()
         }else{
             jump=0;
         }   // Si la W no es presionada detiene el salto (Saltas el tiempo que la ´W´ sea presionada)
+
+        // ### Movimiento a la Izquierda
         if (Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::Left)){  
             if (canJump==1) walkcounter++;  // indica que inicie la animación de caminar
             lastmove = -1;
@@ -286,6 +304,8 @@ int main()
         }else{
             Aa=0;
         }   // Si la ´A´ no es presionada vuelve su variable de presionada falsa
+
+        // ### Reiniciar el Juego
         if (Keyboard::isKeyPressed(Keyboard::R) && Rr==0 || vivo==0){
             Sonic.setPosition(700,0);
             recolected=0;
@@ -313,6 +333,8 @@ int main()
         }else{  // Reinicia la posición del Sonic (Por si se cae al vacio) (Ya no es necesario pues el suelo lo sigue)
             Rr=0;
         }    
+
+        // ### Movimiento a la Derecha
         if (Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::Right)){
             if (canJump==1) walkcounter++;  // indica que inicie la animación de caminar
             lastmove = -1;
@@ -324,6 +346,7 @@ int main()
             Dd=0;
         }   // Si la ´D´ no es presionada vuelve su variable de presionada falsa
 
+        // ### Transformación en Bola
         if (Keyboard::isKeyPressed(Keyboard::S) || Keyboard::isKeyPressed(Keyboard::Down)){
                 if (movex!=0 && gravity==0){
                 ball = 1;
@@ -366,7 +389,9 @@ int main()
         if (movex<0){
             desliz=0.5;
             if (Aa==0){
-                movex+=desliz;
+                movex+=des
+
+liz;
             }
         }else{
             if (movex>0){
@@ -501,3 +526,6 @@ int main()
 
     return 0;
 }
+```
+
+Este código ahora tiene comentarios que dividen las secciones según tus especificaciones.
