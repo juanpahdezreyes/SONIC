@@ -507,11 +507,7 @@ liz;
         window.draw(Sonic);
         Pose.setPosition(Sonic.getPosition());
         window.draw(Pose);
-        // Blanco = Saltando
-        // Morado = Completamente detenido
-        // Verde = Moviendose en una plataforma
-        // Rojo = Cayendo
-        // Ya no es necesario
+       
         if (Sonic.getGlobalBounds().intersects(CdontMove.getGlobalBounds())){
             camara.move(0,movey);
         }else{
