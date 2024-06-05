@@ -101,7 +101,7 @@ int main()
     Sonic.setFillColor(Color::Blue);
     Sonic.setOrigin(32,64);
     Sonic.setPosition(700,0);
-    // ### CREACIÓN DEL JUGADOR 64x128 LA TEXTURA
+    // ### CREACIÓN DEL JUGADOR 
     vector <RectangleShape> nivel; // Vector de bloques que conforman el nivel
     RectangleShape col(Vector2f(512,128)); // Ejemplo base que se va a hace .push_back en el vector de nivel
     col.setPosition(256,896);
