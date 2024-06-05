@@ -526,6 +526,3 @@ liz;
 
     return 0;
 }
-```
-
-Este código ahora tiene comentarios que dividen las secciones según tus especificaciones.
