@@ -1,3 +1,4 @@
+// ###LIBRERIAS
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <iostream>
@@ -6,6 +7,7 @@
 using namespace sf;
 using namespace std;
 
+// ### VARIABLES
 float gravity = 0;
 int jump=0;
 bool canJump = 0;
@@ -29,19 +31,20 @@ int JumpLimit = 25;
 int ToRecolect = 10;
 int recolected = 0;
 
-int rotateFrame = 1; // contador de frames que da , cuando llegue a 360 se reinicia osea la vuelta completa
-int rotateVel=20;   // Variable para la velocidad de giro de la bola que esta en 20 popr que si le pusieramos 360 no se notaria la vuelta
+int rotateFrame = 1;
+int rotateVel=20;   // Variable para la velocidad de giro de la bola
 
 int walkframe=1;    // Frame en el que va la animación caminar
-int walkcounter=0;   // Contador que mide los fotogramas transcurridos para cambiar el sprite de caminar de Sonic
+int walkcounter=0;  // Contador para ir cambiando entre sprites
 int walkwait=10;    // Cuantos frames pasan entre cada diferente sprite/textura de animación de caminar
-// Variables necesarias para la aniamción de caminar
+// Variables necesarias para la animación de caminar
 
 float deltaY;
 float deltaX;
 float intersectX;
 float intersectY;
 
+// ### SONIC JUMP
 void SonicJump(){   // Siempre hay que escribir Sonic.move(0,-10); antes de llamar a esta función
     jump++;
     gravity = 0;
@@ -51,6 +54,7 @@ void SonicJump(){   // Siempre hay que escribir Sonic.move(0,-10); antes de llam
     }
 }   // Hay 25 frames de salto, durante el salto la gravedad se desactiva, cuando el salto se acaba vuelve la gravedad
 
+// ### MAPAS
 class Mapas{
 public:
 int grid[40][7];
@@ -58,6 +62,7 @@ int grid[40][7];
 
 int main()
 {
+
     // ### Carga de Texturas
     sf::Texture bloques;
     bloques.loadFromFile("assets/SbloqueGrass.png");
@@ -90,7 +95,6 @@ int main()
     sf::Sprite Pose(texturas);
     Pose.setOrigin(32,64);//sprite de Sonic
 
-    // ### Creación del Jugador
     RenderWindow window(VideoMode(1664, 1024), "¡Sonic!");
     window.setFramerateLimit(60);
     RectangleShape Sonic(Vector2f(64.f,128.f));
@@ -98,13 +102,15 @@ int main()
     Sonic.setOrigin(32,64);
     Sonic.setPosition(700,0);
 
-    // ### Configuración del Nivel
+    // ### Creación del Jugador
+    // Creación del Jugador 64x128 la Textura
     vector <RectangleShape> nivel; // Vector de bloques que conforman el nivel
     RectangleShape col(Vector2f(512,128)); // Ejemplo base que se va a hace .push_back en el vector de nivel
     col.setPosition(256,896);
     bloques.setRepeated(true);
     col.setTexture(&bloques);
 
+    // ### Configuración del Nivel
     for (int i=0;i<8;i++){
     nivel.push_back(col);
     }   // Número de bloques
@@ -156,7 +162,7 @@ int main()
     for (int i=0;i<lava.size();i++){
         lava[i].setOrigin(lava[i].getSize().x/2,lava[i].getSize().y/2);
     }   // Para las coordenadas
-
+    
     // ### Configuración de la Cámara y el Jugador
     Grid ejemplo;
     ejemplo.sprite.setTexture(bloques);
@@ -210,9 +216,9 @@ int main()
 
         // ### Colisiones con Bloques del Nivel
         for (int i=0;i<nivel.size();i++){ // Recorre el vector de nivel
-            if (Sonic.getGlobalBounds().
+            if (Sonic.getGlobalBounds().intersects(nivel[i].getGlobalBounds())){ // Checa si hay alguna
 
-intersects(nivel[i].getGlobalBounds())){ // Checa si hay alguna colisión entre cualquiera de los bloques existentes en el vector de nivel
+ colisión entre cualquiera de los bloques existentes en el vector de nivel
                 
                 //      REFERENCIA EMPIEZA AQUÍ
                 deltaX = Sonic.getPosition().x - nivel[i].getPosition().x;
@@ -330,7 +336,7 @@ intersects(nivel[i].getGlobalBounds())){ // Checa si hay alguna colisión entre 
                         }   // Si colisionan con una lava se mueven
                     }
             }
-        }else{  // Reinicia la posición del Sonic (Por si se cae al vacio) (Ya no es necesario pues el suelo lo sigue)
+        }else{  // Reinicia la posición del Sonic (Por si se cae al vacío) (Ya no es necesario pues el suelo lo sigue)
             Rr=0;
         }    
 
@@ -384,18 +390,18 @@ intersects(nivel[i].getGlobalBounds())){ // Checa si hay alguna colisión entre 
         if (Dd==0 && Aa==0){
             walkframe=1;
             walkcounter=0;
-        }   // Reinicia las variables de la aniamción de caminar
+        }   // Reinicia las variables de la animación de caminar
 
         if (movex<0){
             desliz=0.5;
             if (Aa==0){
-                movex+=des
-
-liz;
+                movex+=desliz;
             }
         }else{
             if (movex>0){
-            if (Dd==0){
+            if (
+
+Dd==0){
                 movex+=-desliz;
             }
             }
@@ -412,7 +418,7 @@ liz;
             Sonic.setFillColor(Color::Transparent);
             }
         }
-        // Para saber en que movimiento esta Sonic (Si completamente detenido o moviendose en una plataforma)
+        // Para saber en que movimiento esta Sonic (Si completamente detenido o moviéndose en una plataforma)
 
         Sonic.setPosition(Sonic.getPosition().x,Sonic.getPosition().y+1);
         for(int i=0;i<nivel.size();i++){
@@ -462,7 +468,7 @@ liz;
         }else{
             walkcounter = 0;
             walkframe=1;
-        }   // Reinicia las variables de la aniamción de caminar
+        }   // Reinicia las variables de la animación de caminar
 
         Sonic.move(0,gravity);
         if (gravity<=25 && stopG==0 && jump==0){
@@ -507,7 +513,12 @@ liz;
         window.draw(Sonic);
         Pose.setPosition(Sonic.getPosition());
         window.draw(Pose);
-       
+        // Blanco = Saltando
+        // Morado = Completamente detenido
+        // Verde = Moviéndose en una plataforma
+        // Rojo = Cayendo
+        // Ya no es necesario
+
         if (Sonic.getGlobalBounds().intersects(CdontMove.getGlobalBounds())){
             camara.move(0,movey);
         }else{
