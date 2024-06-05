@@ -94,6 +94,7 @@ int main()
     sf::Sprite Pose(texturas);
     Pose.setOrigin(32,64);//sprite de Sonic
 
+    // ### CREACIÓN DE LA VENTANA DE JUEGO
     RenderWindow window(VideoMode(1664, 1024), "¡Sonic!");
     window.setFramerateLimit(60);
     RectangleShape Sonic(Vector2f(64.f,128.f));
@@ -211,10 +212,10 @@ int main()
                 window.close();
         }
         // ### COLISIONES CON BLOQUES DEL NIVEL
-        for (int i=0;i<nivel.size();i++){ // Recorre el vector de nivel
-            if (Sonic.getGlobalBounds().intersects(nivel[i].getGlobalBounds())){
+        for (int i=0
 
- // Checa si hay alguna colisión entre cualquiera de los bloques existentes en el vector de nivel
+;i<nivel.size();i++){ // Recorre el vector de nivel
+            if (Sonic.getGlobalBounds().intersects(nivel[i].getGlobalBounds())){ // Checa si hay alguna colisión entre cualquiera de los bloques existentes en el vector de nivel
                 
                 //      REFERENCIA EMPIEZA AQUÍ
                 deltaX = Sonic.getPosition().x - nivel[i].getPosition().x;
@@ -385,14 +386,14 @@ int main()
         if (Dd==0 && Aa==0){
             walkframe=1;
             walkcounter=0;
-        }   // Reinicia las variables de la aniamción de caminar
+        }   //
+
+ Reinicia las variables de la aniamción de caminar
 
         if (movex<0){
             desliz=0.5;
             if (Aa==0){
-               
-
- movex+=desliz;
+                movex+=desliz;
             }
         }else{
             if (movex>0){
