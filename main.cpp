@@ -388,7 +388,7 @@ int main()
             walkcounter=0;
         }   //
 
- Reinicia las variables de la aniamción de caminar
+ //Reinicia las variables de la aniamción de caminar
 
         if (movex<0){
             desliz=0.5;
